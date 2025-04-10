@@ -44,9 +44,11 @@ for i, row in enumerate(table.find_all("tr")[1:]):
 formatted_data = []
 
 for i in range(len(agents)):
-    row = dict(zip(headers, stats[i]))
+    row = {}
+    row = dict(zip(headers[1:], stats[i]))
     row["Agent"] = agents[i]
-    formatted_data.append(row)
+    row_ordered = {key: row[key] for key in headers} # Reorder the dictionary to match the headers
+    formatted_data.append(row_ordered)
 
 # Prepare the full dictionary
 player_data = {
@@ -54,8 +56,6 @@ player_data = {
     "url": url,
     "current_stats": formatted_data
 }
-
-# print(player_data)
 
 # Write to JSON file
 with open("current_player_stats.json", "w", encoding="utf-8") as f:
