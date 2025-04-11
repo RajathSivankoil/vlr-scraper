@@ -45,12 +45,12 @@ def get_player_stats(player_id: int, timespan: int = 30) -> dict:
     # Extract text, clean up whitespace
     headers = [th.get_text(strip=True) for th in headers]
     headers.insert(0, "Agent")  # Add agent name to the headers
-    rows = table.find_all("tr")
+    rows = table.find_all("tr")[1:]
     agents = [] 
     stats = []
 
     # Iterate through each row in the table (skipping the header row)
-    for i, row in enumerate(table.find_all("tr")[1:]):
+    for i, row in enumerate(rows):
         agent = row.find("img").get("alt") if row.find("img") else "Unknown"
         agents.append(agent)
         raw_stats = row.find_all("td")[1:]  # Skip the first column (agent name)
