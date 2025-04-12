@@ -2,10 +2,14 @@ import requests
 from bs4 import BeautifulSoup
 import json
 import pandas as pd
+from fastapi import FastAPI
+from fastapi.responses import JSONResponse
 
-def get_player_stats(player_id: int, timespan: int = 30) -> dict:
+app = FastAPI()
+
+def get_player_stats(player_id: int, timespan: int = 30):
     timespan = timespan if timespan in [0, 30, 60, 90] else 60  # Default to 60 days if invalid timespan is provided
-    url = "https://www.vlr.gg/player/" + str(player_id) + "/?timespan=" + ("all" if timespan == 0 else str(timespan) + "d") 
+    url = "https://www.vlr.gg/player/" + str(player_id) + "/?timespan=" + ("all" if timespan == 0 else str(timespan)+"d") 
     headers = {'User-Agent': 'Mozilla/5.0'}
     
     try:
@@ -31,7 +35,6 @@ def get_player_stats(player_id: int, timespan: int = 30) -> dict:
 
     # Extract career stats
 
-    stat_data = {}
     # Find the table with class="wf-table" inside the dark mod-table card
     try: 
         table = soup.find("div", class_="wf-card mod-table mod-dark").find("table", class_="wf-table")
@@ -75,16 +78,20 @@ def get_player_stats(player_id: int, timespan: int = 30) -> dict:
     }
     return player_data
 
+# Manually saving to JSON file for testing purposes
 def save_to_json(data: dict, filename: str) -> None:
     if data is None:
-        print("No data to save.")
-        return
+        return None
     with open(filename, 'w') as f:
         json.dump(data, f, indent=4)
-    print(f"{data["name"]}'s stats saved to current_player_stats.json")
 
 def player_stats_to_json(player_id: int, timespan: int = 30) -> None:
     player_data = get_player_stats(player_id, timespan)
     save_to_json(player_data, 'current_player_stats.json')
 
-player_stats_to_json(1265, 30)  # Example player ID and timespan
+@app.get("/player/{player_id}")
+def get_player_stats_endpoint(player_id: int, timespan: int = 30):
+    player_data = get_player_stats(player_id, timespan)
+    if player_data is None:
+        return JSONResponse(status_code=404, content={"message": "Player not found"})
+    return JSONResponse(content=player_data)
