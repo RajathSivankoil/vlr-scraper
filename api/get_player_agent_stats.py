@@ -1,19 +1,14 @@
 import requests
 from bs4 import BeautifulSoup
-import json
-import pandas as pd
-from fastapi import FastAPI
-from fastapi.responses import JSONResponse
 
-app = FastAPI()
-
-def get_player_stats(player_id: int, timespan: int = 30):
+def get_player_agent_stats(player_id: int, timespan: int = 30):
     timespan = timespan if timespan in [0, 30, 60, 90] else 60  # Default to 60 days if invalid timespan is provided
     url = "https://www.vlr.gg/player/" + str(player_id) + "/?timespan=" + ("all" if timespan == 0 else str(timespan)+"d") 
     headers = {'User-Agent': 'Mozilla/5.0'}
     
     try:
         res = requests.get(url, headers=headers)
+        status = res.status_code
         res.raise_for_status()  # Raise an error for bad responses (4xx, 5xx)
     except requests.exceptions.HTTPError as http_err:
         print(f"Error fetching products: {http_err}")
@@ -71,27 +66,13 @@ def get_player_stats(player_id: int, timespan: int = 30):
 
 
     # Prepare the full dictionary
-    player_data = {
+    data = {
         "name": name,
         "url": url,
         "current_stats": formatted_data
     }
-    return player_data
 
-# Manually saving to JSON file for testing purposes
-def save_to_json(data: dict, filename: str) -> None:
-    if data is None:
-        return None
-    with open(filename, 'w') as f:
-        json.dump(data, f, indent=4)
-
-def player_stats_to_json(player_id: int, timespan: int = 30) -> None:
-    player_data = get_player_stats(player_id, timespan)
-    save_to_json(player_data, 'current_player_stats.json')
-
-@app.get("/player/{player_id}")
-def get_player_stats_endpoint(player_id: int, timespan: int = 30):
-    player_data = get_player_stats(player_id, timespan)
-    if player_data is None:
-        return JSONResponse(status_code=404, content={"message": "Player not found"})
-    return JSONResponse(content=player_data)
+    return {
+        "status": status, 
+        "data": data 
+        }

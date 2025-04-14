@@ -1,8 +1,9 @@
 import requests
 from bs4 import BeautifulSoup
 
-
-def vlr_stats(region: str, timespan: int):
+# This function scrapes player statistics for VCT 2025 for a specified region and timespan.
+# Much of this function was taken from the VLR API made by ax
+def get_all_player_stats(region: str, timespan: int):
     
     timespan = timespan if timespan in [0, 30, 60, 90] else 60  # Default to 60 days if invalid timespan is provided
     headers = {"User-Agent": "Mozilla/5.0"} 
@@ -18,7 +19,6 @@ def vlr_stats(region: str, timespan: int):
 
     soup = BeautifulSoup(res.text, "lxml")
     table_body = soup.find("tbody")
-    print(table_body)
     if not table_body:
         print("No data found.")
         return None
@@ -33,9 +33,12 @@ def vlr_stats(region: str, timespan: int):
             continue
 
         # Player name and team
+        
         player_cell = cells[0]
-        player_name = player_cell.find("a", class_="text-of").text.strip()
-        org = player_cell.find("div", class_="ge-text-light").text.strip() if player_cell.find("div", class_="ge-text-light") else "N/A"
+        player_name = player_cell.find("div", class_="text-of")
+        player_name = player_name.text.strip() if player_name else "Unknown"
+        org = player_cell.find("div", class_="stats-player-country")
+        org = org.get_text(strip=True) if org else "Unknown"
 
         # Agents
         agent_imgs = cells[1].find_all("img")
@@ -65,8 +68,3 @@ def vlr_stats(region: str, timespan: int):
         "status": status,
         "data": result
     }
-
-
-# Example usage:
-def main():
-    data = vlr_stats("all", 30)
