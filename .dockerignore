@@ -1,0 +1,8 @@
+# output
+current_player_stats.json
+vlr_stats.json
+
+# compiled files
+__pycache__/
+*.py[cod]
+*.$py.class
