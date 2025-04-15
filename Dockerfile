@@ -8,7 +8,7 @@ RUN python3 -m venv venv
 RUN . venv/bin/activate
 
 RUN pip install --no-cache-dir --upgrade pip
-RUN pip install --no-cache-dir --upgrade fastapi uvicorn bs4 requests lxml 
+RUN pip install --no-cache-dir --upgrade -r requirements.txt
 
 RUN python3 -m 
 COPY . .
