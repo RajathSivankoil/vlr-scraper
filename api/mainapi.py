@@ -1,10 +1,9 @@
 from fastapi import FastAPI
 from fastapi.responses import JSONResponse
-from get_all_player_stats import get_all_player_stats
-from get_player_agent_stats import get_player_agent_stats
+from api.get_all_player_stats import get_all_player_stats
+from api.get_player_agent_stats import get_player_agent_stats
 from fastapi.responses import FileResponse
 from fastapi.responses import RedirectResponse
-import uvicorn
 
 app = FastAPI(
     title="vlr-scraper-api",
@@ -19,7 +18,7 @@ def root():
 
 @app.get("/favicon.ico")
 def favicon():
-    return FileResponse("favicon.ico")
+    return FileResponse(r"/favicon.ico")
 
 @app.get("/player/{player_id}")
 def get_player_agent_stats_endpoint(player_id: int, timespan: int = 30):
@@ -34,6 +33,3 @@ def get_all_player_stats_endpoint(region: str = "all", timespan: int = 60):
     if player_data is None:
         return JSONResponse(status_code=404, content={"message": "No data found"})
     return JSONResponse(content=player_data)
-
-
-uvicorn.run("mainapi:app")

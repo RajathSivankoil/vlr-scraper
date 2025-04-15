@@ -1,21 +1,8 @@
-version: "4.4"
-
 services:
-  api_service:
-    build: .
-    restart: always
+  fastapi_app:
+    build:
+      context: .
+      dockerfile: Dockerfile
     ports:
-      - 8080:8080
-    depends_on:
-      - db
-
-  db:
-    image: "postgres:latest"
-    restart: always
-    ports:
-      - 5432:5432
-    volumes:
-      - db-data:/var/lib/postgresql/data/
-
-volumes:
-  db-data:
+      - "8000:8000"
+    command: [ "uvicorn", "api.mainapi:app", "--host", "0.0.0.0", "--port", "8000" ]

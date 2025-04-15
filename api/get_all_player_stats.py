@@ -1,6 +1,6 @@
 import requests
 from bs4 import BeautifulSoup
-from save_to_json import save_to_json
+from api.save_to_json import save_to_json
 
 # This function scrapes player statistics for VCT 2025 for a specified region and timespan.
 # Much of this function was taken from the VLR API made by axsddlr on GitHub.
