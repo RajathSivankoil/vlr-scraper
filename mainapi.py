@@ -18,7 +18,7 @@ def root():
 
 @app.get("/favicon.ico")
 def favicon():
-    return FileResponse(r"/favicon.ico")
+    return FileResponse(r"favicon.ico")
 
 @app.get("/player/{player_id}")
 def get_player_agent_stats_endpoint(player_id: int, timespan: int = 30):

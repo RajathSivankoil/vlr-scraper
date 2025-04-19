@@ -1,6 +1,7 @@
 # output
 current_player_stats.json
 vlr_stats.json
+all_player_agent_stats.json
 
 # compiled files
 __pycache__/

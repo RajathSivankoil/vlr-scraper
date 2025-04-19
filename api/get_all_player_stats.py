@@ -1,10 +1,10 @@
 import requests
 from bs4 import BeautifulSoup
-from api.save_to_json import save_to_json
+import json
 
 # This function scrapes player statistics for VCT 2025 for a specified region and timespan.
 # Much of this function was taken from the VLR API made by axsddlr on GitHub.
-def get_all_player_stats(region: str, timespan: int):
+def get_all_player_stats(region: str = "all", timespan: int = 30):
     
     timespan = timespan if timespan in [0, 30, 60, 90] else 60  # Default to 60 days if invalid timespan is provided
     headers = {"User-Agent": "Mozilla/5.0"} 
@@ -77,6 +77,7 @@ if __name__ == "__main__":
     timespan = 30  # Days
     player_data = get_all_player_stats(region, timespan)
     if player_data:
-        save_to_json(player_data, "vlr_stats.json")
+        with open("vlr_stats.json", 'w') as f:
+            json.dump(player_data, f, indent=4)
     else:
         print("Failed to retrieve player data.")
