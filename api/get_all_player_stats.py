@@ -8,7 +8,7 @@ def get_all_player_stats(region: str, timespan: int):
     
     timespan = timespan if timespan in [0, 30, 60, 90] else 60  # Default to 60 days if invalid timespan is provided
     headers = {"User-Agent": "Mozilla/5.0"} 
-    url = f"https://www.vlr.gg/stats/?event_group_id=74&region={region}&min_rounds=0&min_rating=1550&agent=all&map_id=all" + "&timespan=" + ("all" if timespan == 0 else str(timespan)+"d") 
+    url = f"https://www.vlr.gg/stats/?event_group_id=86&region=all&min_rounds=200&min_rating=1550&agent=all&map_id=all&timespan=" + ("all" if timespan == 0 else str(timespan)+"d") 
 
     try:
         res = requests.get(url, headers=headers)

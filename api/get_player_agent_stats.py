@@ -4,32 +4,38 @@ from bs4 import BeautifulSoup
 def get_player_agent_stats(player_id: int, timespan: int = 30):
     timespan = timespan if timespan in [0, 30, 60, 90] else 60  # Default to 60 days if invalid timespan is provided
     url = "https://www.vlr.gg/player/" + str(player_id) + "/?timespan=" + ("all" if timespan == 0 else str(timespan)+"d") 
-    headers = {'User-Agent': 'Mozilla/5.0'}
+    http_headers = {'User-Agent': 'Mozilla/5.0'}
     
     try:
-        res = requests.get(url, headers=headers)
+        res = requests.get(url, headers=http_headers)
         status = res.status_code
         res.raise_for_status()  # Raise an error for bad responses (4xx, 5xx)
     except requests.exceptions.HTTPError as http_err:
         print(f"Error fetching products: {http_err}")
-        return None
+        raise http_err
     except requests.exceptions.ConnectionError as errc:
         print("Connection error occurred:", errc)
-        return None
+        raise errc
     except requests.exceptions.Timeout as errt:
         print("Timeout error occurred:", errt)
-        return None
+        raise errt
     except requests.exceptions.RequestException as err:
         print("Some other error occurred:", err)    
-        return None
+        raise err
         
     soup = BeautifulSoup(res.text, "lxml")
 
     # Get player name
     name = soup.find("h1", class_="wf-title").text.strip()
 
+    # Redo Player URL for timespan
+    url = "https://www.vlr.gg/player/" + str(player_id) + "/" + name + "/?timespan=" + ("all" if timespan == 0 else str(timespan)+"d")
+    res = requests.get(url, headers=http_headers)
+    soup = BeautifulSoup(res.text, "lxml")
+    status = res.status_code
+    res.raise_for_status()  # Raise an error for bad responses (4xx, 5xx)
     # Extract career stats
-
+    #
     # Find the table with class="wf-table" inside the dark mod-table card
     try: 
         table = soup.find("div", class_="wf-card mod-table mod-dark").find("table", class_="wf-table")
